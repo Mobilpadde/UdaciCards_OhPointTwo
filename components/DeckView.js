@@ -41,7 +41,7 @@ class DeckView extends Component {
                         const { total, correct } = card.answers;
 
                         return (
-                            <View style={[styles.card, {backgroundColor: background(correct / total)}]} key={card.question}>
+                            <View style={[styles.card, {backgroundColor: background(correct / total)}]} key={card.question + Math.random().toString().substr(5, 10)}>
                                 <Text>{card.question}</Text>
                             </View>
                         );
