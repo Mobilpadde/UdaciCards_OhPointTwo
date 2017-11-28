@@ -11,8 +11,13 @@ const styles = StyleSheet.create({
 	},
 
 	card: {
-		flex: 1,
-	}
+        height: 50,
+	},
+
+    cardText: {
+        fontSize: 32,
+        textAlign: 'center',
+    }
 });
 
 class DeckView extends Component {
@@ -22,7 +27,7 @@ class DeckView extends Component {
     static propTypes = {};
 
     state = {
-    	background: interpolate(['red', 'green']),
+    	background: interpolate(['#ff1111', '#11ff11']),
     };
 
     render() {
@@ -34,7 +39,6 @@ class DeckView extends Component {
 
         return (
         	<View style={styles.container}>
-        		<Text>Lolz</Text>
         		{
         			deck.length > 0 &&
         			deck.map(card => {
@@ -42,7 +46,7 @@ class DeckView extends Component {
 
                         return (
                             <View style={[styles.card, {backgroundColor: background(correct / total)}]} key={card.question + Math.random().toString().substr(5, 10)}>
-                                <Text>{card.question}</Text>
+                                <Text style={styles.cardText} adjustFontSizeToFit={true}>{card.question}</Text>
                             </View>
                         );
                     })

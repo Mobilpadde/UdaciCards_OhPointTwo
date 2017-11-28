@@ -1,28 +1,37 @@
-import { AsyncStorage as store } from 'react';
+import { AsyncStorage } from 'react-native';
 
-function getCardsForDeck(deck) {
-	const contents = new Array(~~(Math.random() * 10) + 1).fill(0).map(() => {
-		const question = new Array(~~(Math.random() * 10) + 1).fill(0).map(() => String.fromCharCode(~~(Math.random() * (122 - 97) + 97)));
+const KEY = 'UdaciCards';
 
-		const total = ~~(Math.random() * 100);
-		return {
-			question,
-			answers: { 
-				total,
-				correct: ~~(Math.random() * total) + 1
-			}
-		};
-	});
+function getCardsForDeck(name) {
+	const item = await AsyncStorage.getItem(KEY);
+	const deck = await JSON.parse(item);
 
-	return contents
+	if (!deck && !deck[name]) { 
+		return [];
+	}
+
+	return deck[name];
 }
 
-// TODO: Save tries and correct answers, colour the deck between red and green in correspondence to how awesome you are.
-function getAllDecks() {
-	return {
-		'javascript': ~~(Math.random() * 10),
-		'react': ~~(Math.random() * 10),
-	}
+async function getAllDecks() {
+	const item = await AsyncStorage.getItem(KEY);
+	const deck = await JSON.parse(item) || {};
+
+	return Object.keys(deck).map(name => ({ [name]: deck[name].length }));
+}
+
+function newDeck(name) {
+	const deck = { [name]: [] };
+	AsyncStorage.setItem(KEY, JSON.stringify(deck));
+
+	return deck;
+}
+
+function saveCard(card, deck) {
+	const newDeck = [...deck, card];
+	AsyncStorage.setItem(KEY, JSON.stringify(newDeck));
+
+	return newDeck;
 }
 
 export {
