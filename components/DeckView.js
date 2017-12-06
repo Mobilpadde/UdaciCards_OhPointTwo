@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { 
+    Text, 
+    View, 
+    StyleSheet, 
+    TextInput,
+    TouchableNativeFeedback
+} from 'react-native';
 import PropTypes from 'prop-types';
 import interpolate from 'color-interpolate';
 
-import { getCardsForDeck } from '../scripts/storage';
+import { getCardsForDeck, saveCard } from '../scripts/storage';
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+        margin: 15,
 	},
 
 	card: {
@@ -17,6 +24,15 @@ const styles = StyleSheet.create({
     cardText: {
         fontSize: 32,
         textAlign: 'center',
+    },
+
+    textInput: {
+        fontSize: 20,
+        padding: 7,
+    },
+
+    button: {
+        padding: 7,
     }
 });
 
@@ -28,19 +44,34 @@ class DeckView extends Component {
 
     state = {
     	background: interpolate(['#ff1111', '#11ff11']),
+        text: '',
+        deck: []
     };
+
+    componentWillMount() {
+        const name = this.props.navigation.state.params.deck;
+
+        getCardsForDeck(name).then(cards => this.setState(old => ({
+            ...old,
+            deck: [...cards],
+        })));
+    }
+
+    async save() {
+        await saveCard(this.state.text, this.state.deck);
+        this.props.navigation.navigate('DeskList');
+    }
 
     render() {
     	const { navigation } = this.props;
-        const { background } = this.state;
+        const { background, deck, text } = this.state;
 
     	const name = navigation.state.params.deck;
-    	const deck = getCardsForDeck(name);
 
         return (
         	<View style={styles.container}>
         		{
-        			deck.length > 0 &&
+        			deck.length > 0 && 
         			deck.map(card => {
                         const { total, correct } = card.answers;
 
@@ -51,6 +82,19 @@ class DeckView extends Component {
                         );
                     })
         		}
+
+                <View>
+                  <TextInput 
+                      style={styles.textInput}
+                      onChangeText={text => this.setState({ text })}
+                      placeholder='Card name...'
+                  />
+                  <TouchableNativeFeedback onPress={this.save.bind(this)}>
+                      <View style={styles.button}>
+                          <Text>Save `{text}`</Text>
+                      </View>
+                  </TouchableNativeFeedback>
+              </View>
         	</View>
         );
     }

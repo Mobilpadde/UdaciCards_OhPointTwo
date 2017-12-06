@@ -18,11 +18,15 @@ class DeckList extends Component {
     };
 
     static propTypes = {};
-    state = {};
+    state = { decks: {} };
+
+    componentWillMount() {
+        getAllDecks().then(decks => this.setState({ decks }));
+    }
 
     render() {
         const { navigation } = this.props;
-        const decks = getAllDecks();
+        const { decks } = this.state;
 
         return (
             <View style={styles.container}>
